@@ -89,15 +89,18 @@ def setup_logging():
 
 
 def load_db_config():
-    # Procura o .env dentro da pasta backend
+    # Procura o .env dentro da pasta backend ou no ambiente atual
     env_path = Path(__file__).resolve().parents[2] / "backend" / ".env"
-    load_dotenv(dotenv_path=env_path)
+    if env_path.exists():
+        load_dotenv(dotenv_path=env_path)
+    else:
+        load_dotenv()
 
     config = {
-        "host": os.getenv("host"),
-        "user": os.getenv("user"),
-        "password": os.getenv("password"),
-        "database": os.getenv("database"),
+        "host": os.getenv("host") or os.getenv("DB_HOST", "localhost"),
+        "user": os.getenv("user") or os.getenv("DB_USER", "root"),
+        "password": os.getenv("password") if os.getenv("password") is not None else os.getenv("DB_PASSWORD", ""),
+        "database": os.getenv("database") or os.getenv("DB_NAME", "gipar_db"),
         "cursorclass": DictCursor,
     }
     return config
