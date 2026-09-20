@@ -7,20 +7,23 @@ load_dotenv()
 
 #Todos os dados inseridos são exemplos, devem ser adaptados de acordo com o seu Banco
 config_db = {
-    'host': os.getenv('DB_HOST', 'localhost'),
-    'user': os.getenv('DB_USER', 'gipar_user'),
-    'password': os.getenv('DB_PASSWORD', 'senha_gipar'),
-    'database': os.getenv('DB_NAME', 'gipar_db'),
+    'host': os.getenv('DB_HOST') or os.getenv('host', 'localhost'),
+    'user': os.getenv('DB_USER') or os.getenv('user', 'root'),
+    'password': os.getenv('DB_PASSWORD') or os.getenv('password', ''),
+    'database': os.getenv('DB_NAME') or os.getenv('database', 'gipar_db'),
 }
 
 def cadastrar_admin():
     try:
-        from gerenciador_db.usuario import obter_hash_senha
+        from seguranca import obter_hash_senha
     except ImportError:
-        from passlib.context import CryptContext
-        pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
-        def obter_hash_senha(senha):
-            return pwd_context.hash(senha)
+        try:
+            from gerenciador_db.usuario import obter_hash_senha
+        except ImportError:
+            from passlib.context import CryptContext
+            pwd_context = CryptContext(schemes=["argon2"], deprecated="auto")
+            def obter_hash_senha(senha):
+                return pwd_context.hash(senha)
 
     con = pymysql.connect(**config_db)
     cur = con.cursor()
@@ -30,13 +33,13 @@ def cadastrar_admin():
         email = "adminTeste@gipar.com"
         senha_pura = "admin123"  
         senha_hasheada = obter_hash_senha(senha_pura)
-        tipo_usuario = "Administrador"  
+        tipo_usuario = "ADMINISTRADOR"  
         ativo = True
 
   
         cur.execute("SELECT id FROM usuario WHERE email = %s", (email,))
         if cur.fetchone():
-            print("Erro: Já existe um usuário cadastrado com este e-mail.")
+            print("Usuário administrador já existe no banco.")
             return
 
         sql = """

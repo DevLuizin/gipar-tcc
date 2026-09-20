@@ -42,10 +42,10 @@ from models.models import HistoricoMovimentacao
 load_dotenv()  
 
 config_db = {
-    "host": os.getenv("host"),
-    "user": os.getenv("user"),
-    "password": os.getenv("password"),
-    "database": os.getenv("database"),
+    "host": os.getenv("host") or os.getenv("DB_HOST", "localhost"),
+    "user": os.getenv("user") or os.getenv("DB_USER", "root"),
+    "password": os.getenv("password") if os.getenv("password") is not None else os.getenv("DB_PASSWORD", ""),
+    "database": os.getenv("database") or os.getenv("DB_NAME", "gipar_db"),
     "cursorclass": DictCursor
 }
 
@@ -62,15 +62,22 @@ async def global_exception_handler(request, exc):
         content={"detail": "Ocorreu um erro interno no servidor. Tente novamente mais tarde."},
     )
 
+origens_config = os.getenv("CORS_ORIGINS", "")
 origens_permitidas = [
-    "http://localhost:5173",  # Porta padrão do Vite / React
-    "http://localhost:3000",  # Porta padrão do React tradicional
-   
+    "http://localhost:5173",
+    "http://127.0.0.1:5173",
+    "http://localhost:3000",
+    "http://127.0.0.1:3000",
+    "http://localhost:80",
+    "http://localhost",
+    "http://127.0.0.1",
 ]
+if origens_config:
+    origens_permitidas.extend([orig.strip() for orig in origens_config.split(",") if orig.strip()])
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:5173", "http://127.0.0.1:5173"],  
+    allow_origins=origens_permitidas,  
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
