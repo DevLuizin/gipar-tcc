@@ -1,0 +1,85 @@
+services:
+  # ===================================================================
+  # 1. Banco de Dados MySQL
+  # ===================================================================
+  db:
+    image: mysql:8.0
+    container_name: gipar-mysql
+    restart: unless-stopped
+    environment:
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD:-rootpassword}
+      MYSQL_DATABASE: ${MYSQL_DATABASE:-gipar_db}
+      MYSQL_USER: ${MYSQL_USER:-gipar_user}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD:-gipar_password}
+    volumes:
+      - mysql_data:/var/lib/mysql
+      - ./docker/mysql/init.sql:/docker-entrypoint-initdb.d/01-init.sql:ro
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-prootpassword"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+      start_period: 15s
+    networks:
+      - gipar-network
+
+  # ===================================================================
+  # 2. Backend FastAPI
+  # ===================================================================
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: gipar-backend
+    restart: unless-stopped
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      host: db
+      user: root
+      password: ${MYSQL_ROOT_PASSWORD:-rootpassword}
+      database: ${MYSQL_DATABASE:-gipar_db}
+      DB_HOST: db
+      DB_USER: root
+      DB_PASSWORD: ${MYSQL_ROOT_PASSWORD:-rootpassword}
+      DB_NAME: ${MYSQL_DATABASE:-gipar_db}
+      SECRET_KEY: ${SECRET_KEY:-chavesecretagipar2026segura}
+      CORS_ORIGINS: ${CORS_ORIGINS:-"http://localhost:5173,http://127.0.0.1:5173,http://localhost:80,http://localhost"}
+      SMTP_SERVER: ${SMTP_SERVER:-smtp.gmail.com}
+      SMTP_PORT: ${SMTP_PORT:-587}
+      SMTP_USER: ${SMTP_USER:-}
+      SMTP_PASSWORD: ${SMTP_PASSWORD:-}
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./scripts:/app/scripts
+    networks:
+      - gipar-network
+
+  # ===================================================================
+  # 3. Frontend React (Nginx)
+  # ===================================================================
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+      args:
+        VITE_API_URL: ${VITE_API_URL:-/api}
+    container_name: gipar-frontend
+    restart: unless-stopped
+    depends_on:
+      - backend
+    ports:
+      - "5173:80"
+    networks:
+      - gipar-network
+
+volumes:
+  mysql_data:
+    name: gipar_mysql_data
+
+networks:
+  gipar-network:
+    name: gipar_network
+    driver: bridge

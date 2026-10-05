@@ -1,0 +1,16 @@
+# ===================================================================
+# Docker Compose Override - Ambiente de Desenvolvimento Local
+# ===================================================================
+# Este arquivo é lido AUTOMATICAMENTE pelo Docker Compose localmente.
+# Ele expõe a porta do MySQL apenas na interface local (127.0.0.1)
+# para que você possa conectar via DBeaver / Workbench / MySQL Workbench.
+#
+# No servidor de PRODUÇÃO:
+# NÃO utilize este arquivo (ou use `docker compose -f docker-compose.yml up -d`)
+# para manter a porta do banco de dados 100% blindada e inacessível pela internet.
+# ===================================================================
+
+services:
+  db:
+    ports:
+      - "127.0.0.1:${MYSQL_PORT:-3307}:3306"
