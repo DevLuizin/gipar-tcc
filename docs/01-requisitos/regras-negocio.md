@@ -1,0 +1,86 @@
+# Catálogo de Regras de Negócio — GIPAR
+
+Este documento centraliza todas as Regras de Negócio (**RN-XXX**) do GIPAR, servindo como base formal para requisitos, implementações, testes e validações com usuários.
+
+---
+
+## Módulo: Gestão de Patrimônio e Itens
+
+### RN-001 — Unicidade de Tombamento e Identificação
+- Todo item de patrimônio cadastrado no sistema deve possuir um número de tombamento ou código identificador único.
+- Não é permitida a duplicação de tombamento ativo no banco de dados.
+
+### RN-002 — Estados e Ciclo de Vida do Item
+- Um item de acervo/laboratório pode transitar apenas entre os seguintes status:
+  - `DISPONIVEL`: item apto para uso imediato, empréstimo ou reserva.
+  - `EMPRESTADO`: item em posse de um solicitante (professor, aluno, técnico).
+  - `RESERVADO`: item vinculado a uma reserva futura confirmada.
+  - `MANUTENCAO`: item indisponível para empréstimo/reserva por avaria ou calibração.
+  - `BAIXADO`: item retirado definitivamente do acervo ativo.
+- Itens com status `MANUTENCAO` ou `BAIXADO` nunca podem ser ofertados como disponíveis em consultas ou reservas.
+
+### RN-003 — Localização Física Obrigatória
+- Todo item deve estar associado a um laboratório, sala ou armário físico pré-definido, garantindo rastreabilidade do patrimônio.
+
+---
+
+## Módulo: Empréstimos e Reservas
+
+### RN-004 — Limite de Prazo e Conflito de Agendamento
+- Um item não pode ser emprestado simultaneamente a mais de um usuário.
+- Uma reserva só pode ser confirmada se não houver sobreposição temporal de datas/horários com outro empréstimo ou reserva ativa para o mesmo item.
+
+### RN-005 — Bloqueio por Atraso na Devolução
+- Usuários com devoluções em atraso ficam temporariamente suspensos de realizar novos empréstimos ou reservas até a regularização do item pendente.
+
+---
+
+## Módulo: Controle de Usuários e Perfis
+
+### RN-006 — Níveis de Acesso e Permissões
+- O sistema opera com perfis de acesso distintos:
+  - `ADMINISTRADOR`: acesso irrestrito a configurações, cadastro de usuários, exclusão de itens e relatórios gerenciais.
+  - `TECNICO`: gestão de itens, aprovação/baixa de empréstimos e manutenções.
+  - `COMUM (Professor/Aluno)`: consulta ao acervo, solicitação de empréstimo/reserva e uso do Chatbot.
+
+### RN-007 — Persistência de Notificações
+- Notificações de sistema marcadas como lidas pelo usuário devem permanecer com status `lida` mesmo após encerramento e reinício de sessão (logout/login).
+
+---
+
+## Módulo: Chatbot Inteligente de Atendimento
+
+### RN-008 — Tolerância a Erros e Desambiguação de Termos Genéricos
+- O Chatbot deve identificar itens do acervo mesmo na presença de variações ortográficas, ausência de acentos ou erros de digitação leves, utilizando índice de similaridade de Levenshtein (RapidFuzz) com limiar mínimo de 75%.
+- **Desambiguação Proativa:** Quando o usuário fizer uma busca por termo genérico (ex: *"jumper"*, *"arduino"*, *"cabo"*), o bot deve verificar todos os itens correspondentes no acervo, listar as variações encontradas com suas respectivas quantidades disponíveis e perguntar qual modelo específico o aluno deseja.
+
+### RN-009 — Resposta Estrita e Objetiva Baseada no Estado Atual do Banco
+- O Chatbot deve sempre consultar o estado do banco de dados MySQL em tempo real ao responder sobre disponibilidade, local ou quantidade de determinado item.
+- As respostas devem ser concisas e diretas, informando com clareza a quantidade livre e o local físico do item, sem prolixidade ou especulações.
+
+### RN-010 — Resposta Padronizada para Indisponibilidade e Itens Ausentes
+- **Item Esgotado ou em Manutenção:** Quando o item pertencer ao catálogo, mas possuir quantidade disponível igual a zero (ou todos estiverem com status diferente de `DISPONIVEL`), o bot deve responder objetivamente:  
+  `"Item indisponível no momento."`
+- **Item Não Localizado:** Quando a similaridade calculada for inferior a 75% e nenhum item correspondente for encontrado no banco de dados, o bot deve responder de forma direta:  
+  `"Item não cadastrado no acervo."`
+
+### RN-011 — Parametrização Externa de Regras e Horários de Funcionamento
+- Regras de prazo de empréstimo, permissões para retirada externa e horários de funcionamento do laboratório devem ser carregadas a partir de um arquivo de configuração/regras desacoplado do código-fonte (ex: `lab_rules.json`), permitindo sua edição direta pela coordenação do laboratório sem necessidade de alteração de código ou recompilação.
+
+---
+
+## Rastreabilidade das Regras de Negócio
+
+| Regra | Módulo | Requisito Relacionado | ADR Relacionada | Status |
+| :--- | :--- | :--- | :--- | :--- |
+| `RN-001` | Patrimônio | `REQ-001`, Baseline Legada | `ADR-001` | 🟢 Validada |
+| `RN-002` | Patrimônio | `REQ-001`, `REQ-004` | `ADR-001` | 🟢 Validada |
+| `RN-003` | Patrimônio | `REQ-001`, `REQ-004` | — | 🟢 Validada |
+| `RN-004` | Empréstimos | Baseline Legada | — | 🟢 Validada |
+| `RN-005` | Empréstimos | Baseline Legada | — | 🟡 Em revisão |
+| `RN-006` | Usuários | `REQ-003` | `ADR-001` | 🟢 Validada |
+| `RN-007` | Usuários | `REQ-003` | — | 🔵 Em correção |
+| `RN-008` | Chatbot | `REQ-001` | `ADR-002` | 🟢 Aprovada |
+| `RN-009` | Chatbot | `REQ-001` | `ADR-002` | 🟢 Aprovada |
+| `RN-010` | Chatbot | `REQ-001` | `ADR-002` | 🟢 Aprovada |
+| `RN-011` | Chatbot | `REQ-001` | `ADR-002` | 🟢 Aprovada |
