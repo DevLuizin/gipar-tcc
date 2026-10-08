@@ -37,6 +37,11 @@ from servicos.dashboard import DashboardService
 from gerenciador_db.auditoria import AuditoriaRepositorio
 from models.models import LogAuditoria
 from models.models import HistoricoMovimentacao
+try:
+    from chat.router import router as chat_router
+except ImportError:
+    from backend.chat.router import router as chat_router
+
 
 
 load_dotenv()  
@@ -82,6 +87,11 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+# Módulo de Chatbot Inteligente (REQ-001)
+app.include_router(chat_router)
+app.include_router(chat_router, prefix="/api")
+
 
 
 categoria_repositorio = CategoriaRepositorio(config_db)

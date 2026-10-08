@@ -17,6 +17,8 @@ import Catalogo from './pages/aluno/Catalogo.jsx';
 // Importações de autenticação
 import ProtectedRoute from './components/ProtectedRoute';
 import { useAuth } from './contexts/AuthContext';
+import ChatWidget from './components/chat/ChatWidget';
+
 
 function RotaInicial() {
   const { isAuthenticated, homePath } = useAuth();
@@ -35,92 +37,97 @@ function DashboardRouter() {
 
 export default function App() {
   return (
-    <Routes>
-      {/* Rotas Públicas */}
-      <Route path="/" element={<RotaInicial />} />
-      <Route path="/login" element={<Login />} />
+    <>
+      <Routes>
+        {/* Rotas Públicas */}
+        <Route path="/" element={<RotaInicial />} />
+        <Route path="/login" element={<Login />} />
 
-      {/* Rotas Protegidas (Exigem Autenticação) */}
-      <Route 
-        path="/dashboard" 
-        element={
-          <ProtectedRoute>
-            <DashboardRouter />
-          </ProtectedRoute>
-        } 
-      />
-      <Route 
-        path="/EstagEquipamentos" 
-        element={
-          <ProtectedRoute>
-            <EstagEquipamentos />
-          </ProtectedRoute>
-        } 
-      />
-      <Route 
-        path="/EstagEmprestimos" 
-        element={
-          <ProtectedRoute>
-            <EstagEmprestimos />
-          </ProtectedRoute>
-        } 
-      />
-      <Route 
-        path="/equipamentos" 
-        element={
-          <ProtectedRoute>
-            <AdmEquipamentos />
-          </ProtectedRoute>
-        } 
-      />
-      <Route 
-        path="/manutencoes" 
-        element={
-          <ProtectedRoute>
-            <Manutencoes />
-          </ProtectedRoute>
-        } 
-      />
-      <Route 
-        path="/usuarios" 
-        element={
-          <ProtectedRoute>
-            <Usuarios />
-          </ProtectedRoute>
-        } 
-      />
-      <Route
-        path="/relatorios"
-        element={
-          <ProtectedRoute>
-            <Relatorios />
-          </ProtectedRoute>
-        }
-      />
-      <Route 
-        path="/alunoEmprestimos" 
-        element={
-          <ProtectedRoute>
-            <MeusEmprestimos />
-          </ProtectedRoute>
-        } 
-      />
-      <Route
-        path="/catalogo"
-        element={
-          <ProtectedRoute>
-            <Catalogo />
-          </ProtectedRoute>
-        }
-      />
-      <Route 
-        path="/emprestimos" 
-        element={
-          <ProtectedRoute>
-            <EmprestimosAdm />
-          </ProtectedRoute>
-        } 
-      />
-    </Routes>
+        {/* Rotas Protegidas (Exigem Autenticação) */}
+        <Route 
+          path="/dashboard" 
+          element={
+            <ProtectedRoute>
+              <DashboardRouter />
+            </ProtectedRoute>
+          } 
+        />
+        <Route 
+          path="/EstagEquipamentos" 
+          element={
+            <ProtectedRoute>
+              <EstagEquipamentos />
+            </ProtectedRoute>
+          } 
+        />
+        <Route 
+          path="/EstagEmprestimos" 
+          element={
+            <ProtectedRoute>
+              <EstagEmprestimos />
+            </ProtectedRoute>
+          } 
+        />
+        <Route 
+          path="/equipamentos" 
+          element={
+            <ProtectedRoute>
+              <AdmEquipamentos />
+            </ProtectedRoute>
+          } 
+        />
+        <Route 
+          path="/manutencoes" 
+          element={
+            <ProtectedRoute>
+              <Manutencoes />
+            </ProtectedRoute>
+          } 
+        />
+        <Route 
+          path="/usuarios" 
+          element={
+            <ProtectedRoute>
+              <Usuarios />
+            </ProtectedRoute>
+          } 
+        />
+        <Route
+          path="/relatorios"
+          element={
+            <ProtectedRoute>
+              <Relatorios />
+            </ProtectedRoute>
+          }
+        />
+        <Route 
+          path="/alunoEmprestimos" 
+          element={
+            <ProtectedRoute>
+              <MeusEmprestimos />
+            </ProtectedRoute>
+          } 
+        />
+        <Route
+          path="/catalogo"
+          element={
+            <ProtectedRoute>
+              <Catalogo />
+            </ProtectedRoute>
+          }
+        />
+        <Route 
+          path="/emprestimos" 
+          element={
+            <ProtectedRoute>
+              <EmprestimosAdm />
+            </ProtectedRoute>
+          } 
+        />
+      </Routes>
+
+      {/* Widget Flutuante do Chatbot Inteligente (REQ-001) */}
+      <ChatWidget />
+    </>
   );
 }

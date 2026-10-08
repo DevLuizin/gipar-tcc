@@ -1,0 +1,29 @@
+{
+  "horario_funcionamento": {
+    "dias": "Segunda a Sexta-feira",
+    "horario_inicio": "08:00",
+    "horario_fim": "18:00",
+    "mensagem": "O laboratório funciona de Segunda a Sexta, das 08h às 18h. As devoluções de material de bancada devem ser feitas até 15 minutos antes do fechamento."
+  },
+  "regras_emprestimo": {
+    "bancada": {
+      "prazo": "Mesmo dia (durante o turno de aula ou expediente)",
+      "autorizacao_necessaria": false,
+      "descricao": "Componentes e ferramentas de bancada (jumpers, protoboards, multímetros) devem ser retirados mediante cadastro e devolvidos no mesmo dia até às 17h45."
+    },
+    "externo_projetos": {
+      "prazo_dias": 7,
+      "autorizacao_necessaria": true,
+      "descricao": "Kits de desenvolvimento (Arduino, ESP, sensores) para TCC ou projetos de extensão podem ser emprestados por até 7 dias, mediante termo assinado e autorização do professor orientador."
+    },
+    "penalidades": {
+      "atraso": "Atrasos na devolução geram suspensão temporária de novos empréstimos até a regularização do item pendente."
+    }
+  },
+  "localizacoes_padrao": {
+    "instrumentacao": "Armário 01 (Bancadas 1 e 2)",
+    "microcontroladores": "Gaveteiro de Eletrônica (Gavetas A e B)",
+    "componentes_passivos": "Gaveteiro Modular Central",
+    "ferramentas": "Painel de Ferramentas / Bancada de Solda"
+  }
+}

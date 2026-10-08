@@ -1,0 +1,179 @@
+{
+  "intents": [
+    {
+      "tag": "saudacao",
+      "patterns": [
+        "olá",
+        "ola",
+        "oi",
+        "oie",
+        "bom dia",
+        "boa tarde",
+        "boa noite",
+        "e aí",
+        "e ai",
+        "fala aí",
+        "tudo bem",
+        "opa",
+        "opa, tudo bem?",
+        "salve",
+        "olá, preciso de ajuda",
+        "oi bot",
+        "olá bot",
+        "bom dia, tem alguém aí?"
+      ],
+      "responses": [
+        "Olá! Sou o assistente do laboratório. Como posso ajudar com os equipamentos hoje?",
+        "Oi! Em que posso ajudar você com o acervo do laboratório hoje?",
+        "Olá! Precisa consultar algum componente, disponibilidade ou regra de empréstimo?"
+      ]
+    },
+    {
+      "tag": "consultar_disponibilidade",
+      "patterns": [
+        "tem arduino disponível?",
+        "tem arduino disponivel?",
+        "tem arduino uno?",
+        "tem arduino mega?",
+        "vocês têm osciloscópio?",
+        "voces tem osciloscopio?",
+        "tem multímetro livre?",
+        "tem multimetro sobrando?",
+        "tem jumper?",
+        "quantos jumpers macho macho nós temos?",
+        "quantos jumpers tem disponível?",
+        "tem placa de fenolite livre?",
+        "tem placa perfurada?",
+        "tem fonte de bancada livre?",
+        "tem cabo mini usb?",
+        "tem cabo arduino?",
+        "tem estação de solda livre?",
+        "tem modulo rele?",
+        "tem shield esp8266?",
+        "tem ponte h?",
+        "tem ponte h l298n?",
+        "tem protoboard disponível?",
+        "tem resistor de 10k?",
+        "tem capacitor?",
+        "vocês têm ferro de solda?",
+        "tem sensor ultrassom?",
+        "tem display lcd?",
+        "quais itens estão livres?",
+        "o que tem disponível de arduino?",
+        "tem kit de robótica?",
+        "tem peça sobrando?",
+        "posso pegar um multímetro agora?",
+        "tem algum osciloscopio livre no laboratório?",
+        "verifica se tem arduino uno no estoque",
+        "está disponível o arduino mega2560?",
+        "tem conector jumper macho preto?"
+      ],
+      "responses": []
+    },
+    {
+      "tag": "consultar_localizacao",
+      "patterns": [
+        "onde fica a estação de solda?",
+        "onde fica o osciloscópio?",
+        "onde estão os jumpers?",
+        "onde fica guardado o arduino?",
+        "onde eu encontro as placas de fenolite?",
+        "em qual armário está o multímetro?",
+        "em que gaveta fica o cabo mini usb?",
+        "qual a localização da ponte h?",
+        "onde retiro os componentes?",
+        "onde ficam as fontes de bancada?",
+        "onde posso pegar o kit arduino?",
+        "onde acho resistores?",
+        "onde fica guardada a placa perfurada?",
+        "onde estão os módulos relé?",
+        "qual bancada tem osciloscópio?",
+        "onde estão os cabos de alimentação?"
+      ],
+      "responses": []
+    },
+    {
+      "tag": "regras_emprestimo",
+      "patterns": [
+        "como funciona o empréstimo?",
+        "como funciona o emprestimo?",
+        "posso levar o multímetro pra casa?",
+        "posso levar o equipamento pra casa?",
+        "qual o prazo de devolução?",
+        "quanto tempo posso ficar com o arduino?",
+        "preciso de autorização do professor?",
+        "posso tirar componente pra fazer tcc?",
+        "quem pode retirar equipamento?",
+        "o que preciso apresentar para retirar?",
+        "o que acontece se eu atrasar a entrega?",
+        "aluno pode levar kit de robótica pra fora?",
+        "tem limite de peças que posso pegar?",
+        "quais as regras para pegar emprestado?",
+        "como faço para pegar um item?",
+        "posso renovar o empréstimo?",
+        "qual a penalidade por atraso?"
+      ],
+      "responses": []
+    },
+    {
+      "tag": "horario_funcionamento",
+      "patterns": [
+        "qual o horário do laboratório?",
+        "qual o horario de funcionamento?",
+        "que horas o laboratório abre?",
+        "que horas o laboratório fecha?",
+        "o laboratório abre no sábado?",
+        "o lab funciona no intervalo?",
+        "até que horas posso devolver o material?",
+        "posso entregar o item às 18h?",
+        "qual o expediente dos técnicos?",
+        "que horas posso retirar equipamentos?",
+        "o laboratório está aberto agora?",
+        "qual horário posso pegar o arduino?"
+      ],
+      "responses": []
+    },
+    {
+      "tag": "ajuda",
+      "patterns": [
+        "o que você sabe fazer?",
+        "o que você faz?",
+        "ajuda",
+        "help",
+        "quais comandos posso usar?",
+        "como você pode me ajudar?",
+        "me dá exemplos de perguntas",
+        "como você funciona?",
+        "não sei o que perguntar",
+        "quais informações você tem?",
+        "o que posso consultar aqui?"
+      ],
+      "responses": [
+        "Posso te ajudar a consultar itens do laboratório! Você pode perguntar sobre:\n- Disponibilidade e quantidades (ex: 'Tem Arduino disponível?' ou 'Quantos jumpers temos?')\n- Localização física (ex: 'Onde fica a estação de solda?')\n- Regras e prazos de empréstimo (ex: 'Posso levar o multímetro pra casa?')\n- Horário de funcionamento do laboratório."
+      ]
+    },
+    {
+      "tag": "despedida",
+      "patterns": [
+        "obrigado",
+        "obrigada",
+        "muito obrigado",
+        "valeu",
+        "valeu demais",
+        "tchau",
+        "até mais",
+        "ate logo",
+        "até amanhã",
+        "era só isso",
+        "só isso, obrigado",
+        "falou",
+        "abraço"
+      ],
+      "responses": [
+        "De nada! Bons estudos e boas montagens no laboratório.",
+        "Disponha! Qualquer outra dúvida sobre os equipamentos, é só chamar.",
+        "Até mais! Um ótimo trabalho no laboratório."
+      ]
+    }
+  ]
+}
