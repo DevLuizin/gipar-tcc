@@ -13,10 +13,10 @@ from seguranca import obter_hash_senha
 load_dotenv()
 
 config_db = {
-    "host": os.getenv("host"),
-    "user": os.getenv("user"),
-    "password": os.getenv("password"),
-    "database": os.getenv("database"),
+    "host": os.getenv("DB_HOST") or os.getenv("host", "localhost"),
+    "user": os.getenv("DB_USER") or os.getenv("user", "root"),
+    "password": os.getenv("DB_PASSWORD") if os.getenv("DB_PASSWORD") is not None else os.getenv("password", ""),
+    "database": os.getenv("DB_NAME") or os.getenv("database", "gipar_db"),
     "cursorclass": DictCursor
 }
 

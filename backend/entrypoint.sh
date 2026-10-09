@@ -37,6 +37,7 @@ EOF
 
 echo "👤 Verificando/Criando usuário administrador padrão..."
 python criar_admin.py || echo "⚠️ Aviso ao executar criar_admin.py (pode já existir)"
+python teste_login.py || echo "⚠️ Aviso ao executar teste_login.py (pode já existir)"
 
 echo "🚀 Iniciando servidor FastAPI (Uvicorn)..."
 exec uvicorn main:app --host 0.0.0.0 --port 8000
