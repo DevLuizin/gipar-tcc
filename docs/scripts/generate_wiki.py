@@ -28,7 +28,7 @@ import subprocess
 from datetime import datetime
 from pathlib import Path
 
-LAST_DOCUMENTATION_UPDATE = "2026-10-12T10:19:44.489240-03:00"
+LAST_DOCUMENTATION_UPDATE = "2026-10-12T10:31:04.528848"
 
 SCRIPT_DIR = Path(__file__).resolve().parent
 PROJECT_ROOT = SCRIPT_DIR.parent.parent
