@@ -28,7 +28,7 @@ import subprocess
 from datetime import datetime
 from pathlib import Path
 
-LAST_DOCUMENTATION_UPDATE = "2026-10-04T16:11:30.531946"
+LAST_DOCUMENTATION_UPDATE = "2026-10-12T10:19:44.489240-03:00"
 
 SCRIPT_DIR = Path(__file__).resolve().parent
 PROJECT_ROOT = SCRIPT_DIR.parent.parent
@@ -178,11 +178,17 @@ def parse_fastapi_backend(backend_dir: Path):
     models = []
     db_methods = []
 
-    main_py = backend_dir / "main.py"
-    if main_py.exists():
-        content = read_text(main_py)
+    route_files = [backend_dir / "main.py"]
+    routers_dir = backend_dir / "api" / "routers"
+    if routers_dir.exists():
+        route_files.extend(sorted(routers_dir.rglob("*.py")))
+
+    for route_file in route_files:
+        if not route_file.exists():
+            continue
+        content = read_text(route_file)
         pattern = re.compile(
-            r'@app\.(get|post|put|delete|patch)\(\s*["\']([^"\']+)["\'](.*?)\)\s*\n(?:async\s+)?def\s+([A-Za-z0-9_]+)\s*\((.*?)\)',
+            r'@(?:app|router)\.(get|post|put|delete|patch)\(\s*["\']([^"\']+)["\'](.*?)\)\s*\n(?:async\s+)?def\s+([A-Za-z0-9_]+)\s*\((.*?)\)',
             re.DOTALL
         )
         for m in pattern.finditer(content):
@@ -199,7 +205,7 @@ def parse_fastapi_backend(backend_dir: Path):
                 "function": fn_name,
                 "params": params,
                 "tags": tags,
-                "source": "backend/main.py"
+                "source": relative_source(route_file.resolve())
             })
 
     models_file = backend_dir / "models" / "models.py"
@@ -478,7 +484,12 @@ def update_script_timestamp():
     target = Path(__file__).resolve()
     content = read_text(target)
     now_iso = datetime.now().isoformat()
-    updated = re.sub(r'LAST_DOCUMENTATION_UPDATE = "2026-10-04T16:11:30.531946"]+"', f'LAST_DOCUMENTATION_UPDATE = "2026-10-04T16:11:30.531946"', content)
+    updated = re.sub(
+        r'LAST_DOCUMENTATION_UPDATE = "[^"]+"',
+        f'LAST_DOCUMENTATION_UPDATE = "{now_iso}"',
+        content,
+        count=1,
+    )
     target.write_text(updated, encoding="utf-8")
 
 def main():

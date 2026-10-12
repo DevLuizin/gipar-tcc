@@ -50,7 +50,9 @@ flowchart TB
         end
 
         subgraph BackContainer["gipar-backend (Container Python 3.11-slim)"]
-            FastAPI["FastAPI REST API<br/><i>[Uvicorn - Porta 8000]</i><br/>Controladores REST, autenticação JWT e rotas de negócio"]
+            FastAPI["FastAPI REST API<br/><i>[Uvicorn - Porta 8000]</i><br/>Composition root, CORS e tratamento global de erros"]
+            Routers["Routers por domínio<br/><i>[FastAPI APIRouter]</i><br/>Auth, patrimônio, movimentações, relatórios e sistema"]
+            Dependencies["Dependências compartilhadas<br/><i>[api/dependencies.py]</i><br/>Repositórios, configuração MySQL e permissões"]
             NLP["Pipeline NLP Chatbot<br/><i>[Scikit-Learn + RapidFuzz]</i><br/>Classificador de intenções e extrator de similaridade"]
             DBClient["Gerenciador DB<br/><i>[PyMySQL]</i><br/>Execução de queries SQL parametrizadas"]
         end
@@ -62,8 +64,10 @@ flowchart TB
 
     Browser -->|"HTTP/HTTPS (Porta 3000)"| Nginx
     Nginx -->|"Proxy reverso /api/* (Porta 8000)"| FastAPI
-    FastAPI --> NLP
-    FastAPI --> DBClient
+    FastAPI --> Routers
+    Routers --> Dependencies
+    Routers --> NLP
+    Dependencies --> DBClient
     DBClient -->|"Conexão TCP MySQL (Porta 3306)"| DB
 ```
 
@@ -71,4 +75,4 @@ flowchart TB
 
 ## 3. Rastreabilidade
 - **Requisitos:** `REQ-001`, `REQ-002`, `REQ-003`, `REQ-004`
-- **ADRs:** `ADR-001`, `ADR-002`
+- **ADRs:** `ADR-001`, `ADR-002`, `ADR-004`
