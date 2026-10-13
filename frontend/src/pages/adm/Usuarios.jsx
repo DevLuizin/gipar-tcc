@@ -1,12 +1,12 @@
 import LayoutUsuario from "../../layouts/usuario/LayoutUsuario";
 import PopUpCadastrarEditarUsuario from "../../components/PopUpCadastrarEditarUsuario";
 import Pesquisa from "../../components/Pesquisa/Pesquisa";
-import TabelaGipar from "../../components/tabelaGipar/TabelaGipar";
+import TabulatorGipar from "../../components/tabulatorGipar";
 import Botao from "../../components/Botao";
 import PopUpExclusao from "../../components/PopUpExclusao";
-import StatusBadge from "../../components/ui/StatusBadge";
+import normalizarTexto from "../../utils/normalizarTexto";
 
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useMemo } from "react";
 import { buscarUsuarios, criarUsuario, atualizarUsuario, inativarUsuario, reativarUsuario } from "../../services/usuarios/usuarios.service";
 
 export default function Usuario() {
@@ -20,6 +20,22 @@ export default function Usuario() {
 
     const [usuarioSelecionado, setUsuarioSelecionado] = useState(null);
     const [usuarios, setUsuarios] = useState([]);
+
+    const colunas = useMemo(() => [
+        { titulo: "Nome", chave: "nome", prioridadeResponsiva: 0 },
+        { titulo: "Email", chave: "email", prioridadeResponsiva: 3 },
+        { titulo: "Perfil", chave: "tipo_usuario", prioridadeResponsiva: 2 },
+        {
+            titulo: "Status",
+            chave: "ativo",
+            tipo: "status",
+            prioridadeResponsiva: 1,
+            formatarValor: (valor) =>
+                valor === true || valor === 1 || valor === "true" || valor === "1"
+                    ? "Ativo"
+                    : "Inativo",
+        },
+    ], []);
 
     const carregarUsuarios = useCallback(async () => {
         try {
@@ -86,25 +102,27 @@ export default function Usuario() {
         setUsuarioSelecionado(null);
     };
 
-    const usuariosFiltrados = usuarios.filter((usuario) => {
-        const termoMinusculo = termo.toLowerCase();
-        
-        const bateTexto = 
-            usuario.nome?.toLowerCase().includes(termoMinusculo) ||
-            usuario.email?.toLowerCase().includes(termoMinusculo);
-            
-        const batePerfil = filtroPerfil === "" || usuario.tipo_usuario === filtroPerfil;
-        
-        // 🔴 CORREÇÃO: Quando filtroStatus está vazio, mostra TODOS
-        let bateStatus = true;
-        if (filtroStatus === "Ativo") {
-            bateStatus = usuario.ativo === true || usuario.ativo === 1 || usuario.ativo === "true" || usuario.ativo === "1";
-        } else if (filtroStatus === "Inativo") {
-            bateStatus = usuario.ativo === false || usuario.ativo === 0 || usuario.ativo === "false" || usuario.ativo === "0";
-        }
+    const usuariosFiltrados = useMemo(() => {
+        const termoNormalizado = normalizarTexto(termo);
 
-        return bateTexto && batePerfil && bateStatus;
-    });
+        return usuarios.filter((usuario) => {
+            const bateTexto =
+                normalizarTexto(usuario.nome).includes(termoNormalizado) ||
+                normalizarTexto(usuario.email).includes(termoNormalizado);
+
+            const batePerfil = filtroPerfil === "" || usuario.tipo_usuario === filtroPerfil;
+
+            // 🔴 CORREÇÃO: Quando filtroStatus está vazio, mostra TODOS
+            let bateStatus = true;
+            if (filtroStatus === "Ativo") {
+                bateStatus = usuario.ativo === true || usuario.ativo === 1 || usuario.ativo === "true" || usuario.ativo === "1";
+            } else if (filtroStatus === "Inativo") {
+                bateStatus = usuario.ativo === false || usuario.ativo === 0 || usuario.ativo === "false" || usuario.ativo === "0";
+            }
+
+            return bateTexto && batePerfil && bateStatus;
+        });
+    }, [filtroPerfil, filtroStatus, termo, usuarios]);
 
     return (
         <section className="h-screen w-full flex flex-row">
@@ -140,17 +158,8 @@ export default function Usuario() {
                     </div>
 
                     <div className="w-full">
-                        <TabelaGipar
-                            colunas={[
-                                { titulo: "Nome", chave: "nome" },
-                                { titulo: "Email", chave: "email" },
-                                { titulo: "Perfil", chave: "tipo_usuario" },
-                                { 
-                                    titulo: "Status", 
-                                    chave: "ativo", 
-                                    render: (valor) => <StatusBadge status={valor ? "Ativo" : "Inativo"} /> 
-                                },
-                            ]}
+                        <TabulatorGipar
+                            colunas={colunas}
                             dados={usuariosFiltrados} 
                             onEditar={(usuario) => {
                                 setUsuarioSelecionado(usuario);
