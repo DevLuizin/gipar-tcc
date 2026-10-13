@@ -2,7 +2,7 @@
 
 **Status:** Aprovada
 **Data:** 2026-10-12
-**Decisores:** Equipe de Desenvolvimento GIPAR
+**Decisores:** Luiz
 **Requisitos Relacionados:** Não aplicável — refatoração sem mudança funcional
 
 ---

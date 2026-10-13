@@ -2,7 +2,7 @@
 
 **Status:** Aprovada  
 **Data:** 2026-10-04  
-**Decisores:** Equipe de Desenvolvimento GIPAR  
+**Decisores:** Luiz, Crescencio   
 **Requisitos Relacionados:** REQ-001, REQ-002, REQ-003  
 
 ---

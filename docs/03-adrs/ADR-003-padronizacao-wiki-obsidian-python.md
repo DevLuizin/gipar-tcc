@@ -2,7 +2,7 @@
 
 **Status:** Aprovada  
 **Data:** 2026-10-04  
-**Decisores:** Equipe de Desenvolvimento GIPAR  
+**Decisores:** Luiz 
 **Requisitos Relacionados:** Governança de Requisitos e Rastreabilidade  
 
 ---
