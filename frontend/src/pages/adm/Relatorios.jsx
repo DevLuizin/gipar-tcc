@@ -4,9 +4,10 @@ import LayoutUsuario from "../../layouts/usuario/LayoutUsuario";
 import CaixaSelecao from "../../components/CaixadeSelecao/CaixadeSelecao";
 import DataSelecao from "../../components/DataSelecao/DataSelecao";
 import Botao from "../../components/Botao";
-import TabelaGipar from "../../components/tabelaGipar/TabelaGipar";
-import StatusBadge from "../../components/ui/StatusBadge";
+import Pesquisa from "../../components/Pesquisa/Pesquisa";
+import TabulatorGipar from "../../components/tabulatorGipar";
 import EstadoVazio from "../../components/EstadoVazio/EstadoVazio";
+import normalizarTexto from "../../utils/normalizarTexto";
 import { TIPOS_RELATORIO } from "../../constants/relatorios.constants";
 import {
   buscarDadosRelatorio,
@@ -25,6 +26,7 @@ export default function Relatorios() {
   const [erro, setErro] = useState("");
   const [previewGerada, setPreviewGerada] = useState(false);
   const [tipoRelatorioPreview, setTipoRelatorioPreview] = useState("emprestimos");
+  const [termoPreview, setTermoPreview] = useState("");
 
   const configAtual = obterConfigRelatorio(tipoRelatorio);
   const labelRelatorio = obterLabelTipoRelatorio(tipoRelatorioPreview);
@@ -33,15 +35,26 @@ export default function Relatorios() {
   const colunasPreview = useMemo(() => {
     const config = obterConfigRelatorio(tipoRelatorioPreview);
 
-    return config.colunas.map((coluna) => {
-      if (coluna.chave !== "status") return coluna;
-
-      return {
-        ...coluna,
-        render: (valor) => <StatusBadge status={valor} />,
-      };
-    });
+    return config.colunas.map((coluna, indice) => ({
+      ...coluna,
+      tipo: coluna.chave === "status" ? "status" : undefined,
+      prioridadeResponsiva:
+        coluna.chave === "nome" || coluna.chave === "equipamento"
+          ? 0
+          : indice + 1,
+    }));
   }, [tipoRelatorioPreview]);
+
+  const dadosPreviewFiltrados = useMemo(() => {
+    const termoNormalizado = normalizarTexto(termoPreview);
+    if (!termoNormalizado) return dadosPreview;
+
+    return dadosPreview.filter((registro) =>
+      colunasPreview.some((coluna) =>
+        normalizarTexto(registro[coluna.chave]).includes(termoNormalizado)
+      )
+    );
+  }, [colunasPreview, dadosPreview, termoPreview]);
 
   const validarPeriodo = useCallback(() => {
     if (dataInicial && dataFinal && dataInicial > dataFinal) {
@@ -213,7 +226,17 @@ export default function Relatorios() {
             )}
 
             {!carregando && previewGerada && dadosPreview.length > 0 && (
-              <TabelaGipar colunas={colunasPreview} dados={dadosPreview} />
+              <>
+                <Pesquisa
+                  termo={termoPreview}
+                  setTermo={setTermoPreview}
+                  placeholderTexto="Buscar na pré-visualização..."
+                />
+                <TabulatorGipar
+                  colunas={colunasPreview}
+                  dados={dadosPreviewFiltrados}
+                />
+              </>
             )}
           </article>
         </div>
