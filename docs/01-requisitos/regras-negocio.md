@@ -69,6 +69,18 @@ Este documento centraliza todas as Regras de Negócio (**RN-XXX**) do GIPAR, ser
 
 ---
 
+## Módulo: Interface de Usuário e Listagens
+
+### RN-012 — Paginação, Ordenação e Busca Global em Listagens Tabulares
+- As listagens abrangidas pelo `REQ-004` devem oferecer busca textual insensível a maiúsculas/minúsculas e acentuação gráfica.
+- A busca e os filtros de domínio permanecem sob responsabilidade das páginas e devem ser aplicados antes do envio dos dados ao componente tabular.
+- A listagem deve permitir ordenação bidirecional (ascendente e descendente) nas colunas configuradas.
+- A paginação deve disponibilizar 10, 25, 50 e 100 itens por página.
+- A aplicação de busca ou filtro e a alteração da quantidade de itens por página devem retornar a navegação à primeira página.
+- Em telas pequenas, as colunas secundárias devem ser recolhidas sem impedir o acesso aos seus valores.
+
+---
+
 ## Rastreabilidade das Regras de Negócio
 
 | Regra | Módulo | Requisito Relacionado | ADR Relacionada | Status |
@@ -84,3 +96,4 @@ Este documento centraliza todas as Regras de Negócio (**RN-XXX**) do GIPAR, ser
 | `RN-009` | Chatbot | `REQ-001` | `ADR-002` | 🟢 Aprovada |
 | `RN-010` | Chatbot | `REQ-001` | `ADR-002` | 🟢 Aprovada |
 | `RN-011` | Chatbot | `REQ-001` | `ADR-002` | 🟢 Aprovada |
+| `RN-012` | Listagens / UI | `REQ-004` | `ADR-005` | 🟢 Aprovada |
