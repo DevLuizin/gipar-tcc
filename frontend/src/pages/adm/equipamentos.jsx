@@ -5,12 +5,12 @@
 import LayoutUsuario from "../../layouts/usuario/LayoutUsuario.jsx";
 import PopUpCadastrarEditarEquipamento from "../../components/PopUpCadastrarEditarEquipamento/index.jsx";
 import Pesquisa from "../../components/Pesquisa/Pesquisa";
-import TabelaGipar from "../../components/tabelaGipar/TabelaGipar";
+import TabulatorGipar from "../../components/tabulatorGipar";
 import Botao from "../../components/Botao";
 import PopUpExclusao from "../../components/PopUpExclusao";
-import StatusBadge from "../../components/ui/StatusBadge";
+import normalizarTexto from "../../utils/normalizarTexto";
 
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useMemo } from "react";
 import { buscarEquipamentos, criarEquipamento, atualizarEquipamento, deletarEquipamento } from "../../services/Equipamentos/equipamentos.service";
 
 export default function Equipamentos() {
@@ -28,6 +28,13 @@ export default function Equipamentos() {
     const [equipamentoSelecionado, setEquipamentoSelecionado] = useState(null);
     const [equipamentos, setEquipamentos] = useState([]);
     const [carregando, setCarregando] = useState(false);
+
+    const colunas = useMemo(() => [
+        { titulo: "Nome", chave: "nome", prioridadeResponsiva: 0 },
+        { titulo: "Patrimônio", chave: "codigo_patrimonio", prioridadeResponsiva: 2 },
+        { titulo: "Categoria", chave: "categoria", prioridadeResponsiva: 3 },
+        { titulo: "Status", chave: "status", tipo: "status", prioridadeResponsiva: 1 },
+    ], []);
 
     // ============================================================
     // FUNÇÕES
@@ -127,20 +134,21 @@ export default function Equipamentos() {
     // FILTROS
     // ============================================================
 
-    const equipamentosFiltrados = equipamentos.filter((equipamento) => {
-        const termoMinusculo = termo.toLowerCase();
+    const equipamentosFiltrados = useMemo(() => {
+        const termoNormalizado = normalizarTexto(termo);
 
-        const bateTexto =
-            equipamento.nome?.toLowerCase().includes(termoMinusculo) ||
-            (equipamento.codigo_patrimonio || equipamento.patrimonio || "")
-                .toLowerCase()
-                .includes(termoMinusculo);
+        return equipamentos.filter((equipamento) => {
+            const bateTexto =
+                normalizarTexto(equipamento.nome).includes(termoNormalizado) ||
+                normalizarTexto(equipamento.codigo_patrimonio || equipamento.patrimonio)
+                    .includes(termoNormalizado);
 
-        const bateCategoria = categoria === "" || equipamento.categoria === categoria;
-        const bateStatus = filtroStatus === "" || equipamento.status === filtroStatus;
+            const bateCategoria = categoria === "" || equipamento.categoria === categoria;
+            const bateStatus = filtroStatus === "" || equipamento.status === filtroStatus;
 
-        return bateTexto && bateCategoria && bateStatus;
-    });
+            return bateTexto && bateCategoria && bateStatus;
+        });
+    }, [categoria, equipamentos, filtroStatus, termo]);
 
     // ============================================================
     // RENDER
@@ -182,17 +190,8 @@ export default function Equipamentos() {
                         {carregando ? (
                             <div className="text-center py-8 text-gray-500">Carregando equipamentos...</div>
                         ) : (
-                            <TabelaGipar
-                                colunas={[
-                                    { titulo: "Nome", chave: "nome" },
-                                    { titulo: "Patrimônio", chave: "codigo_patrimonio" },
-                                    { titulo: "Categoria", chave: "categoria" },
-                                    {
-                                        titulo: "Status",
-                                        chave: "status",
-                                        render: (valor) => <StatusBadge status={valor} />,
-                                    },
-                                ]}
+                            <TabulatorGipar
+                                colunas={colunas}
                                 dados={equipamentosFiltrados}
                                 onEditar={(equipamento) => {
                                     setEquipamentoSelecionado(equipamento);

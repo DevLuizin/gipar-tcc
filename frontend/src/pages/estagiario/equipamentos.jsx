@@ -1,15 +1,44 @@
 import LayoutUsuario from "../../layouts/usuario/LayoutUsuario.jsx";
 import Pesquisa from "../../components/Pesquisa/Pesquisa";
-import TabelaGipar from "../../components/tabelaGipar/TabelaGipar";
-import StatusBadge from "../../components/ui/StatusBadge";
-import { useState, useEffect, useCallback } from "react";
+import TabulatorGipar from "../../components/tabulatorGipar";
+import normalizarTexto from "../../utils/normalizarTexto";
+import { useState, useEffect, useCallback, useMemo } from "react";
 import { buscarEquipamentos } from "../../services/Equipamentos/equipamentos.service";
+
+const STATUS_EQUIVALENTES = {
+    disponivel: ["disponivel"],
+    emprestado: ["emprestado", "em uso"],
+    "em manutencao": ["em manutencao", "manutencao"],
+    inativo: ["inativo"],
+};
 
 export default function Equipamentos() {
     const [termo, setTermo] = useState("");
     const [categoria, setCategoria] = useState("");
     const [filtroStatus, setFiltroStatus] = useState("");
     const [equipamentos, setEquipamentos] = useState([]);
+
+    const colunas = useMemo(() => [
+        {
+            titulo: "Nome",
+            chave: "nome",
+            campoSecundario: "descricao",
+            prioridadeResponsiva: 0,
+        },
+        {
+            titulo: "Patrimônio",
+            chave: "codigo_patrimonio",
+            chaveAlternativa: "patrimonio",
+            prioridadeResponsiva: 2,
+        },
+        {
+            titulo: "Categoria",
+            chave: "nome_categoria",
+            chaveAlternativa: "categoria",
+            prioridadeResponsiva: 3,
+        },
+        { titulo: "Status", chave: "status", tipo: "status", prioridadeResponsiva: 1 },
+    ], []);
 
     const carregarEquipamentos = useCallback(async () => {
         try {
@@ -24,22 +53,27 @@ export default function Equipamentos() {
         carregarEquipamentos();
     }, [carregarEquipamentos]);
 
-    const equipamentosFiltrados = equipamentos.filter((equipamento) => {
-        const termoMinusculo = termo.toLowerCase();
-        
-        // Puxando o codigo_patrimonio real do backend
-        const patrimonio = (equipamento.codigo_patrimonio || equipamento.patrimonio || "").toLowerCase();
-        const nomeEq = (equipamento.nome || "").toLowerCase();
-            
-        const bateTexto = nomeEq.includes(termoMinusculo) || patrimonio.includes(termoMinusculo);
-            
-        const cat = equipamento.nome_categoria || equipamento.categoria || "";
-        const bateCategoria = categoria === "" || cat === categoria;
-        
-        const bateStatus = filtroStatus === "" || equipamento.status === filtroStatus;
+    const equipamentosFiltrados = useMemo(() => {
+        const termoNormalizado = normalizarTexto(termo);
 
-        return bateTexto && bateCategoria && bateStatus;
-    });
+        return equipamentos.filter((equipamento) => {
+            // Puxando o codigo_patrimonio real do backend
+            const patrimonio = normalizarTexto(equipamento.codigo_patrimonio || equipamento.patrimonio);
+            const nomeEq = normalizarTexto(equipamento.nome);
+
+            const bateTexto = nomeEq.includes(termoNormalizado) || patrimonio.includes(termoNormalizado);
+
+            const cat = equipamento.nome_categoria || equipamento.categoria || "";
+            const bateCategoria = categoria === "" || cat === categoria;
+
+            const statusEquipamento = normalizarTexto(equipamento.status).replaceAll("_", " ");
+            const statusFiltro = normalizarTexto(filtroStatus);
+            const bateStatus = filtroStatus === "" ||
+                STATUS_EQUIVALENTES[statusFiltro]?.includes(statusEquipamento);
+
+            return bateTexto && bateCategoria && bateStatus;
+        });
+    }, [categoria, equipamentos, filtroStatus, termo]);
 
     return (
         <section className="h-screen w-full flex flex-row">
@@ -71,26 +105,8 @@ export default function Equipamentos() {
                     </div>
 
                     <div className="w-full">
-                        <TabelaGipar
-                            colunas={[
-                                { 
-                                    titulo: "Nome", 
-                                    chave: "nome",
-                                    render: (valor, linha) => (
-                                        <div className="flex flex-col">
-                                            <span className="font-medium text-gray-900">{linha.nome}</span>
-                                            {linha.descricao && (
-                                                <span className="text-xs text-gray-500 mt-0.5">{linha.descricao}</span>
-                                            )}
-                                        </div>
-                                    )
-                                },
-                                // Chave corrigida para bater com o MySQL
-                                { titulo: "Patrimônio", chave: "codigo_patrimonio", render: (valor, linha) => valor || linha.patrimonio },
-                                // Ajuste preventivo para aceitar nome_categoria do banco de dados
-                                { titulo: "Categoria", chave: "nome_categoria", render: (valor, linha) => valor || linha.categoria },
-                                { titulo: "Status", chave: "status" ,render: (valor) => <StatusBadge status={valor} />},
-                            ]}
+                        <TabulatorGipar
+                            colunas={colunas}
                             dados={equipamentosFiltrados} 
                         />
                     </div>
