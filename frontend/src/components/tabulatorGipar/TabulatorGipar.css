@@ -1,0 +1,177 @@
+.tabulator-gipar.tabulator {
+  overflow: hidden;
+  border: 1px solid #e5e7eb;
+  border-radius: 0.5rem;
+  background-color: #ffffff;
+  box-shadow: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+  color: #4b5563;
+  font-family: inherit;
+  font-size: 0.875rem;
+}
+
+.tabulator-gipar.tabulator .tabulator-header {
+  border-bottom: 1px solid #e5e7eb;
+  background-color: #f9fafb;
+  color: #6b7280;
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+}
+
+.tabulator-gipar.tabulator .tabulator-header .tabulator-col,
+.tabulator-gipar.tabulator .tabulator-header .tabulator-col.tabulator-sortable:hover {
+  border-right: 0;
+  background-color: #f9fafb;
+}
+
+.tabulator-gipar.tabulator .tabulator-header .tabulator-col .tabulator-col-content {
+  padding: 0.75rem 1.5rem;
+}
+
+.tabulator-gipar.tabulator .tabulator-header .tabulator-col .tabulator-col-title {
+  overflow: visible;
+  text-overflow: initial;
+  white-space: normal;
+}
+
+.tabulator-gipar.tabulator .tabulator-header .tabulator-col.tabulator-sortable .tabulator-col-title {
+  padding-right: 0.75rem;
+}
+
+.tabulator-gipar.tabulator .tabulator-header .tabulator-col[aria-sort="ascending"] .tabulator-col-sorter,
+.tabulator-gipar.tabulator .tabulator-header .tabulator-col[aria-sort="descending"] .tabulator-col-sorter {
+  color: #374151;
+}
+
+.tabulator-gipar.tabulator .tabulator-tableholder .tabulator-table {
+  background-color: #ffffff;
+}
+
+.tabulator-gipar.tabulator .tabulator-row {
+  min-height: 3.25rem;
+  border-bottom: 1px solid #e5e7eb;
+  background-color: #ffffff;
+  color: #4b5563;
+  transition: background-color 150ms ease;
+}
+
+.tabulator-gipar.tabulator .tabulator-row:last-child {
+  border-bottom: 0;
+}
+
+.tabulator-gipar.tabulator .tabulator-row.tabulator-row-even {
+  background-color: #ffffff;
+}
+
+.tabulator-gipar.tabulator .tabulator-row:hover,
+.tabulator-gipar.tabulator .tabulator-row.tabulator-row-even:hover,
+.tabulator-gipar.tabulator .tabulator-row.tabulator-selectable:hover {
+  background-color: rgb(249 250 251 / 0.8);
+}
+
+.tabulator-gipar.tabulator .tabulator-row .tabulator-cell {
+  min-height: 3.25rem;
+  padding: 1rem 1.5rem;
+  border-right: 0;
+  white-space: normal;
+}
+
+.tabulator-gipar.tabulator .tabulator-row .tabulator-cell.tabulator-row-header,
+.tabulator-gipar.tabulator .tabulator-header .tabulator-col.tabulator-row-header {
+  padding-right: 0.5rem;
+  padding-left: 0.5rem;
+}
+
+.tabulator-gipar.tabulator .tabulator-placeholder {
+  min-height: 6.25rem;
+  color: #9ca3af;
+}
+
+.tabulator-gipar.tabulator .tabulator-placeholder .tabulator-placeholder-contents {
+  font-size: 0.875rem;
+  font-weight: 400;
+}
+
+.tabulator-gipar.tabulator .tabulator-footer {
+  padding: 0.75rem 1rem;
+  border-top: 1px solid #e5e7eb;
+  background-color: #ffffff;
+  color: #6b7280;
+  font-weight: 400;
+}
+
+.tabulator-gipar.tabulator .tabulator-footer .tabulator-footer-contents {
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.tabulator-gipar.tabulator .tabulator-footer .tabulator-page-size {
+  min-height: 2rem;
+  margin: 0;
+  padding: 0.25rem 1.75rem 0.25rem 0.625rem;
+  border: 1px solid #d1d5db;
+  border-radius: 0.375rem;
+  background-color: #ffffff;
+  color: #374151;
+}
+
+.tabulator-gipar.tabulator .tabulator-footer .tabulator-page-counter {
+  color: #6b7280;
+}
+
+.tabulator-gipar.tabulator .tabulator-footer .tabulator-paginator {
+  color: #4b5563;
+}
+
+.tabulator-gipar.tabulator .tabulator-footer .tabulator-page {
+  min-width: 2rem;
+  min-height: 2rem;
+  margin: 0 0.125rem;
+  padding: 0.25rem 0.5rem;
+  border: 1px solid #d1d5db;
+  border-radius: 0.375rem;
+  background-color: #ffffff;
+  color: #4b5563;
+}
+
+.tabulator-gipar.tabulator .tabulator-footer .tabulator-page:not(.disabled):hover {
+  border-color: #9ca3af;
+  background-color: #f9fafb;
+  color: #111827;
+}
+
+.tabulator-gipar.tabulator .tabulator-footer .tabulator-page.active {
+  border-color: #2563eb;
+  background-color: #2563eb;
+  color: #ffffff;
+}
+
+.tabulator-gipar.tabulator .tabulator-footer .tabulator-page.disabled {
+  cursor: not-allowed;
+  opacity: 0.45;
+}
+
+.tabulator-gipar.tabulator .tabulator-responsive-collapse {
+  padding: 0.75rem 1rem;
+  border-top: 1px solid #e5e7eb;
+  border-bottom: 0;
+  background-color: #f9fafb;
+}
+
+@media (max-width: 639px) {
+  .tabulator-gipar.tabulator .tabulator-header .tabulator-col .tabulator-col-content,
+  .tabulator-gipar.tabulator .tabulator-row .tabulator-cell {
+    padding-right: 0.75rem;
+    padding-left: 0.75rem;
+  }
+
+  .tabulator-gipar.tabulator .tabulator-footer .tabulator-footer-contents {
+    justify-content: center;
+  }
+
+  .tabulator-gipar.tabulator .tabulator-footer .tabulator-page-counter {
+    width: 100%;
+    margin: 0 0 0.5rem;
+    text-align: center;
+  }
+}
