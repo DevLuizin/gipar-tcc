@@ -45,6 +45,7 @@ Este documento centraliza todas as Regras de Negócio (**RN-XXX**) do GIPAR, ser
 
 ### RN-007 — Persistência de Notificações
 - Notificações de sistema marcadas como lidas pelo usuário devem permanecer com status `lida` mesmo após encerramento e reinício de sessão (logout/login).
+- A implementação desta regra será planejada em requisito próprio e não integra o escopo do `REQ-003`.
 
 ---
 
@@ -81,6 +82,24 @@ Este documento centraliza todas as Regras de Negócio (**RN-XXX**) do GIPAR, ser
 
 ---
 
+## Módulo: Usuários, Meu Perfil e Configurações
+
+### RN-013 — Autoatendimento de Perfil e Troca de Senha com Reautenticação
+- Todo usuário autenticado pode editar seu nome, nome de exibição, e-mail e avatar predefinido, sem alterar o próprio perfil de acesso ou status.
+- O avatar deve ser selecionado de um catálogo fechado e versionado na aplicação; upload de fotografia e exibição de avatar na listagem administrativa não integram este requisito.
+- A alteração de e-mail deve validar formato e unicidade, exigir a senha atual e informar que o e-mail é a credencial usada no login.
+- A alteração de senha exige senha atual validada contra o hash `argon2`, nova senha com no mínimo 8 caracteres contendo letras e números e confirmação idêntica.
+- Alterações de e-mail ou senha devem incrementar `token_version`, invalidar todos os JWTs anteriormente emitidos para o usuário, encerrar a sessão local e redirecionar para `/login`.
+
+### RN-014 — Sistema de Temas e Acessibilidade Visual
+- A aplicação deve preservar sem alteração visual o Padrão Institucional GIPAR e disponibilizar também Modo Escuro (Dark Mode), Azul Tecnológico (Ocean) e Alto Contraste.
+- A seleção de tema deve alterar a interface em tempo real sem necessidade de recarregar a página.
+- O MySQL é a fonte oficial da preferência de tema para permitir uso em diferentes dispositivos.
+- O `localStorage` deve manter cache separado por usuário, usado somente para aplicação imediata durante a inicialização e posteriormente reconciliado com o valor do banco.
+- A implementação deve usar tokens semânticos, mantendo o tema institucional como fallback, e só pode declarar conformidade WCAG após medição objetiva de contraste.
+
+---
+
 ## Rastreabilidade das Regras de Negócio
 
 | Regra | Módulo | Requisito Relacionado | ADR Relacionada | Status |
@@ -91,9 +110,11 @@ Este documento centraliza todas as Regras de Negócio (**RN-XXX**) do GIPAR, ser
 | `RN-004` | Empréstimos | Baseline Legada | — | 🟢 Validada |
 | `RN-005` | Empréstimos | Baseline Legada | — | 🟡 Em revisão |
 | `RN-006` | Usuários | `REQ-003` | `ADR-001` | 🟢 Validada |
-| `RN-007` | Usuários | `REQ-003` | — | 🔵 Em correção |
+| `RN-007` | Notificações | Requisito futuro | — | 🟡 Planejada |
 | `RN-008` | Chatbot | `REQ-001` | `ADR-002` | 🟢 Aprovada |
 | `RN-009` | Chatbot | `REQ-001` | `ADR-002` | 🟢 Aprovada |
 | `RN-010` | Chatbot | `REQ-001` | `ADR-002` | 🟢 Aprovada |
 | `RN-011` | Chatbot | `REQ-001` | `ADR-002` | 🟢 Aprovada |
 | `RN-012` | Listagens / UI | `REQ-004` | `ADR-005` | 🟢 Aprovada |
+| `RN-013` | Perfil / Segurança | `REQ-003` | `ADR-006` | 🟢 Aprovada |
+| `RN-014` | Temas / UI | `REQ-003` | `ADR-006` | 🟢 Aprovada |
