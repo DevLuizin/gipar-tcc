@@ -1,6 +1,6 @@
 """Rotas de usuários da API GIPAR."""
 
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, Depends, status
 
 from api.dependencies import (
     PERMISSAO_ADMIN,
@@ -8,11 +8,75 @@ from api.dependencies import (
     auditoria_repositorio,
     usuario_repositorio,
 )
-from models.models import LogAuditoria, Usuario
+from models.models import (
+    AlterarSenhaRequest,
+    AtualizarPerfilRequest,
+    AtualizarTemaRequest,
+    LogAuditoria,
+    PerfilUsuarioResponse,
+    Usuario,
+)
 from seguranca import obter_usuario_atual
 
 
-router = APIRouter()
+router = APIRouter(tags=["Usuários"])
+
+
+@router.get(
+    "/usuarios/me",
+    response_model=PerfilUsuarioResponse,
+    status_code=status.HTTP_200_OK,
+    summary="Consultar o próprio perfil",
+)
+async def obter_meu_perfil(
+    usuario_logado: dict = Depends(obter_usuario_atual),
+):
+    return await usuario_repositorio.obter_perfil(usuario_logado["id"])
+
+
+@router.put(
+    "/usuarios/me",
+    status_code=status.HTTP_200_OK,
+    summary="Atualizar o próprio perfil",
+)
+async def atualizar_meu_perfil(
+    dados: AtualizarPerfilRequest,
+    usuario_logado: dict = Depends(obter_usuario_atual),
+):
+    return await usuario_repositorio.atualizar_perfil(
+        usuario_logado["id"],
+        dados,
+    )
+
+
+@router.put(
+    "/usuarios/me/senha",
+    status_code=status.HTTP_200_OK,
+    summary="Alterar a própria senha",
+)
+async def alterar_minha_senha(
+    dados: AlterarSenhaRequest,
+    usuario_logado: dict = Depends(obter_usuario_atual),
+):
+    return await usuario_repositorio.alterar_senha(
+        usuario_logado["id"],
+        dados,
+    )
+
+
+@router.put(
+    "/usuarios/me/tema",
+    status_code=status.HTTP_200_OK,
+    summary="Atualizar o tema do usuário",
+)
+async def atualizar_meu_tema(
+    dados: AtualizarTemaRequest,
+    usuario_logado: dict = Depends(obter_usuario_atual),
+):
+    return await usuario_repositorio.atualizar_tema(
+        usuario_logado["id"],
+        dados,
+    )
 
 
 #===============================================================================================

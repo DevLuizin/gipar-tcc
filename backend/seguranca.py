@@ -2,8 +2,10 @@ import jwt
 from datetime import datetime, timedelta, timezone
 from passlib.context import CryptContext
 import os
+import pymysql
 from fastapi import Depends, HTTPException, status
 from fastapi.security import OAuth2PasswordBearer
+from pymysql.cursors import DictCursor
 
 #USE pip install passlib argon2-cffi
 
@@ -46,6 +48,20 @@ def decodificar_token(token: str) -> dict:
     
 
 
+def _configuracao_banco() -> dict:
+    return {
+        "host": os.getenv("host") or os.getenv("DB_HOST", "localhost"),
+        "user": os.getenv("user") or os.getenv("DB_USER", "root"),
+        "password": (
+            os.getenv("password")
+            if os.getenv("password") is not None
+            else os.getenv("DB_PASSWORD", "")
+        ),
+        "database": os.getenv("database") or os.getenv("DB_NAME", "gipar_db"),
+        "cursorclass": DictCursor,
+    }
+
+
 def obter_usuario_atual(token: str = Depends(oauth2_scheme)):
     """
     Verifica o token da requisição. Se for válido, retorna os dados do usuário.
@@ -63,14 +79,40 @@ def obter_usuario_atual(token: str = Depends(oauth2_scheme)):
         email: str = payload.get("sub")
         usuario_id: int = payload.get("id")
         perfil: str = payload.get("perfil")
+        token_version = payload.get("token_version")
 
-        if email is None or usuario_id is None:
+        if email is None or usuario_id is None or token_version is None:
             raise excecao_credenciais
-            
-        # Retorna o ID e o email extraídos do token
-        return {"id": usuario_id, "email": email, "perfil": perfil}
+
+        con = pymysql.connect(**_configuracao_banco())
+        try:
+            with con.cursor() as cur:
+                cur.execute(
+                    """
+                    SELECT id, email, tipo_usuario, token_version
+                    FROM usuario
+                    WHERE id = %s AND ativo = TRUE
+                    """,
+                    (usuario_id,),
+                )
+                usuario = cur.fetchone()
+        finally:
+            con.close()
+
+        if (
+            not usuario
+            or usuario["email"] != email
+            or usuario["token_version"] != token_version
+        ):
+            raise excecao_credenciais
+
+        return {
+            "id": usuario["id"],
+            "email": usuario["email"],
+            "perfil": usuario["tipo_usuario"] or perfil,
+        }
         
-    except jwt.PyJWTError:
+    except (jwt.PyJWTError, pymysql.MySQLError):
         raise excecao_credenciais
     
 def verificar_permissao(tipos_permitidos: list):

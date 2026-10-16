@@ -54,6 +54,7 @@ services:
       - "8000:8000"
     volumes:
       - ./scripts:/app/scripts
+      - ./docker/mysql/migrations:/app/migrations:ro
     networks:
       - gipar-network
 

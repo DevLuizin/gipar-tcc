@@ -21,12 +21,24 @@ CREATE TABLE IF NOT EXISTS categoria (
 CREATE TABLE IF NOT EXISTS usuario (
     id INT AUTO_INCREMENT PRIMARY KEY,
     nome VARCHAR(100) NOT NULL,
+    nome_exibicao VARCHAR(100) NULL,
     email VARCHAR(100) UNIQUE NOT NULL,
     senha VARCHAR(255) NOT NULL,
     tipo_usuario ENUM('ADMINISTRADOR', 'TECNICO', 'COMUM') DEFAULT 'COMUM',
     ativo BOOLEAN DEFAULT TRUE,
+    avatar VARCHAR(50) NULL,
+    tema VARCHAR(30) NOT NULL DEFAULT 'institucional',
+    token_version INT NOT NULL DEFAULT 0,
     data_cadastro TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 ) ENGINE=InnoDB;
+
+CREATE TABLE IF NOT EXISTS schema_migrations (
+    nome VARCHAR(255) PRIMARY KEY,
+    aplicado_em TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+) ENGINE=InnoDB;
+
+INSERT IGNORE INTO schema_migrations (nome)
+VALUES ('001_perfil_temas_token_version.sql');
 
 -- 3. TABELA: equipamento
 CREATE TABLE IF NOT EXISTS equipamento (

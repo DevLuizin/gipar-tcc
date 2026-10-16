@@ -1,12 +1,28 @@
 from typing import Optional
 from datetime import date, datetime
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, field_validator, model_validator
 from enum import Enum
 
 class TipoUsuario(str, Enum):
     ADMINISTRADOR = "ADMINISTRADOR"
     TECNICO = "TECNICO"
     COMUM = "COMUM"
+
+
+class TemaUsuario(str, Enum):
+    INSTITUCIONAL = "institucional"
+    DARK = "dark"
+    OCEAN = "ocean"
+    ALTO_CONTRASTE = "alto-contraste"
+
+
+class AvatarUsuario(str, Enum):
+    ROBO_AZUL = "robo-azul"
+    ROBO_VERDE = "robo-verde"
+    ROBO_ROXO = "robo-roxo"
+    CIRCUITO_AZUL = "circuito-azul"
+    CIRCUITO_VERDE = "circuito-verde"
+    CIRCUITO_LARANJA = "circuito-laranja"
 
 class StatusEquipamento(str, Enum):
     DISPONIVEL = "DISPONIVEL"
@@ -61,6 +77,75 @@ class Usuario(BaseModel):
     senha: str
     tipo_usuario: TipoUsuario = TipoUsuario.COMUM
     ativo: Optional[bool] = True
+
+
+class PerfilUsuarioResponse(BaseModel):
+    id: int
+    nome: str
+    nome_exibicao: Optional[str] = None
+    email: str
+    tipo_usuario: TipoUsuario
+    avatar: Optional[AvatarUsuario] = None
+    tema: TemaUsuario = TemaUsuario.INSTITUCIONAL
+    data_cadastro: Optional[datetime] = None
+
+
+class AtualizarPerfilRequest(BaseModel):
+    nome: str = Field(min_length=2, max_length=100)
+    nome_exibicao: Optional[str] = Field(default=None, max_length=100)
+    email: str = Field(min_length=3, max_length=100)
+    avatar: Optional[AvatarUsuario] = None
+    senha_atual: Optional[str] = None
+
+    @field_validator("nome")
+    @classmethod
+    def validar_nome(cls, valor: str) -> str:
+        valor = valor.strip()
+        if len(valor) < 2:
+            raise ValueError("O nome deve ter pelo menos 2 caracteres")
+        return valor
+
+    @field_validator("nome_exibicao")
+    @classmethod
+    def normalizar_nome_exibicao(cls, valor):
+        if valor is None:
+            return None
+        return valor.strip() or None
+
+    @field_validator("email")
+    @classmethod
+    def validar_email(cls, valor: str) -> str:
+        valor = valor.strip().lower()
+        if "@" not in valor or valor.startswith("@") or valor.endswith("@"):
+            raise ValueError("E-mail inválido")
+        return valor
+
+
+class AlterarSenhaRequest(BaseModel):
+    senha_atual: str
+    nova_senha: str = Field(min_length=8)
+    confirmacao_senha: str
+
+    @field_validator("nova_senha")
+    @classmethod
+    def validar_forca_senha(cls, valor: str) -> str:
+        if not any(caractere.isalpha() for caractere in valor):
+            raise ValueError("A nova senha deve conter pelo menos uma letra")
+        if not any(caractere.isdigit() for caractere in valor):
+            raise ValueError("A nova senha deve conter pelo menos um número")
+        return valor
+
+    @model_validator(mode="after")
+    def validar_confirmacao(self):
+        if self.nova_senha != self.confirmacao_senha:
+            raise ValueError("A confirmação da senha não confere")
+        if self.nova_senha == self.senha_atual:
+            raise ValueError("A nova senha deve ser diferente da senha atual")
+        return self
+
+
+class AtualizarTemaRequest(BaseModel):
+    tema: TemaUsuario
 
 
 class Equipamento(BaseModel):

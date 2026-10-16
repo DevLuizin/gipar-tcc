@@ -28,7 +28,12 @@ async def login(form_data: OAuth2PasswordRequestForm = Depends()):
 
         # Busca o usuário
         print(f"🔍 Buscando usuário: {form_data.username}")
-        sql = "SELECT id, nome, email, senha, tipo_usuario FROM usuario WHERE email = %s AND ativo = True"
+        sql = """
+            SELECT id, nome, nome_exibicao, email, senha, tipo_usuario,
+                   avatar, tema, token_version
+            FROM usuario
+            WHERE email = %s AND ativo = TRUE
+        """
         cur.execute(sql, (form_data.username,))
         usuario_db = cur.fetchone()
 
@@ -59,7 +64,8 @@ async def login(form_data: OAuth2PasswordRequestForm = Depends()):
             "sub": usuario_db['email'],
             "id": usuario_db['id'],
             "nome": usuario_db['nome'],
-            "perfil": usuario_db['tipo_usuario']
+            "perfil": usuario_db['tipo_usuario'],
+            "token_version": usuario_db['token_version'],
         })
         print("✅ Token gerado com sucesso!")
 
@@ -68,9 +74,12 @@ async def login(form_data: OAuth2PasswordRequestForm = Depends()):
             "token_type": "bearer",
             "id": usuario_db['id'],
             "nome": usuario_db['nome'],
+            "nome_exibicao": usuario_db['nome_exibicao'],
             "email": usuario_db['email'],
             "perfil": perfil_frontend,
-            "tipo_usuario": usuario_db['tipo_usuario']
+            "tipo_usuario": usuario_db['tipo_usuario'],
+            "avatar": usuario_db['avatar'],
+            "tema": usuario_db['tema'],
         }
 
     except HTTPException:

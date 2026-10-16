@@ -2,8 +2,13 @@ from fastapi import HTTPException
 import pymysql
 from pymysql.cursors import DictCursor
 import traceback
-from seguranca import obter_hash_senha
-from models.models import Usuario, TipoUsuario  # ← Importe o TipoUsuario
+from seguranca import obter_hash_senha, verificar_senha
+from models.models import (
+    AlterarSenhaRequest,
+    AtualizarPerfilRequest,
+    AtualizarTemaRequest,
+    Usuario,
+)
 
 class UsuarioRepositorio:
     def __init__(self, db_config: dict):
@@ -159,6 +164,198 @@ class UsuarioRepositorio:
         except HTTPException:
             raise
         except Exception as e:
+            traceback.print_exc()
+            raise HTTPException(status_code=500, detail=str(e))
+        finally:
+            if cur:
+                cur.close()
+            if con:
+                con.close()
+
+    async def obter_perfil(self, usuario_id: int):
+        con = None
+        cur = None
+        try:
+            con = pymysql.connect(**self.config_db)
+            cur = con.cursor()
+            cur.execute(
+                """
+                SELECT id, nome, nome_exibicao, email, tipo_usuario,
+                       avatar, tema, data_cadastro
+                FROM usuario
+                WHERE id = %s AND ativo = TRUE
+                """,
+                (usuario_id,),
+            )
+            usuario = cur.fetchone()
+            if not usuario:
+                raise HTTPException(status_code=404, detail="Usuário não encontrado")
+            return usuario
+        except HTTPException:
+            raise
+        except Exception as e:
+            traceback.print_exc()
+            raise HTTPException(status_code=500, detail=str(e))
+        finally:
+            if cur:
+                cur.close()
+            if con:
+                con.close()
+
+    async def atualizar_perfil(
+        self,
+        usuario_id: int,
+        dados: AtualizarPerfilRequest,
+    ):
+        con = None
+        cur = None
+        try:
+            con = pymysql.connect(**self.config_db)
+            cur = con.cursor()
+            cur.execute(
+                """
+                SELECT email, senha
+                FROM usuario
+                WHERE id = %s AND ativo = TRUE
+                FOR UPDATE
+                """,
+                (usuario_id,),
+            )
+            usuario = cur.fetchone()
+            if not usuario:
+                raise HTTPException(status_code=404, detail="Usuário não encontrado")
+
+            email_alterado = dados.email != usuario["email"].lower()
+            if email_alterado:
+                if not dados.senha_atual:
+                    raise HTTPException(
+                        status_code=400,
+                        detail="Informe a senha atual para alterar o e-mail",
+                    )
+                if not verificar_senha(dados.senha_atual, usuario["senha"]):
+                    raise HTTPException(status_code=400, detail="Senha atual incorreta")
+                cur.execute(
+                    "SELECT id FROM usuario WHERE email = %s AND id <> %s",
+                    (dados.email, usuario_id),
+                )
+                if cur.fetchone():
+                    raise HTTPException(status_code=400, detail="E-mail já cadastrado")
+
+            incremento_versao = 1 if email_alterado else 0
+            cur.execute(
+                """
+                UPDATE usuario
+                SET nome = %s,
+                    nome_exibicao = %s,
+                    email = %s,
+                    avatar = %s,
+                    token_version = token_version + %s
+                WHERE id = %s
+                """,
+                (
+                    dados.nome,
+                    dados.nome_exibicao,
+                    dados.email,
+                    dados.avatar.value if dados.avatar else None,
+                    incremento_versao,
+                    usuario_id,
+                ),
+            )
+            con.commit()
+            return {
+                "perfil": await self.obter_perfil(usuario_id),
+                "requer_novo_login": email_alterado,
+            }
+        except HTTPException:
+            if con:
+                con.rollback()
+            raise
+        except Exception as e:
+            if con:
+                con.rollback()
+            traceback.print_exc()
+            raise HTTPException(status_code=500, detail=str(e))
+        finally:
+            if cur:
+                cur.close()
+            if con:
+                con.close()
+
+    async def alterar_senha(self, usuario_id: int, dados: AlterarSenhaRequest):
+        con = None
+        cur = None
+        try:
+            con = pymysql.connect(**self.config_db)
+            cur = con.cursor()
+            cur.execute(
+                """
+                SELECT senha
+                FROM usuario
+                WHERE id = %s AND ativo = TRUE
+                FOR UPDATE
+                """,
+                (usuario_id,),
+            )
+            usuario = cur.fetchone()
+            if not usuario:
+                raise HTTPException(status_code=404, detail="Usuário não encontrado")
+            if not verificar_senha(dados.senha_atual, usuario["senha"]):
+                raise HTTPException(status_code=400, detail="Senha atual incorreta")
+
+            cur.execute(
+                """
+                UPDATE usuario
+                SET senha = %s, token_version = token_version + 1
+                WHERE id = %s
+                """,
+                (obter_hash_senha(dados.nova_senha), usuario_id),
+            )
+            con.commit()
+            return {
+                "sucesso": True,
+                "mensagem": "Senha alterada. Faça login novamente.",
+                "requer_novo_login": True,
+            }
+        except HTTPException:
+            if con:
+                con.rollback()
+            raise
+        except Exception as e:
+            if con:
+                con.rollback()
+            traceback.print_exc()
+            raise HTTPException(status_code=500, detail=str(e))
+        finally:
+            if cur:
+                cur.close()
+            if con:
+                con.close()
+
+    async def atualizar_tema(
+        self,
+        usuario_id: int,
+        dados: AtualizarTemaRequest,
+    ):
+        con = None
+        cur = None
+        try:
+            con = pymysql.connect(**self.config_db)
+            cur = con.cursor()
+            cur.execute(
+                "UPDATE usuario SET tema = %s WHERE id = %s AND ativo = TRUE",
+                (dados.tema.value, usuario_id),
+            )
+            if cur.rowcount == 0:
+                raise HTTPException(status_code=404, detail="Usuário não encontrado")
+            con.commit()
+            return {"sucesso": True, "tema": dados.tema.value}
+        except HTTPException:
+            if con:
+                con.rollback()
+            raise
+        except Exception as e:
+            if con:
+                con.rollback()
             traceback.print_exc()
             raise HTTPException(status_code=500, detail=str(e))
         finally:
