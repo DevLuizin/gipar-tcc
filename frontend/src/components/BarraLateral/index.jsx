@@ -10,6 +10,7 @@ export default function Sidebar({
   userRole,
   nomeUsuario = "Usuário",
   cargoUsuario = "",
+  avatarUsuario,
   onLogout,
   mobileAberto = false,
   onFecharMobile,
@@ -88,7 +89,7 @@ export default function Sidebar({
             menuExpandido ? "" : "justify-center"
           }`}
         >
-          <Avatar nome={nomeUsuario} tamanho={menuExpandido ? 36 : 32} />
+          <Avatar nome={nomeUsuario} avatar={avatarUsuario} tamanho={menuExpandido ? 36 : 32} />
           {menuExpandido && (
             <>
               <div className="min-w-0 flex-1">

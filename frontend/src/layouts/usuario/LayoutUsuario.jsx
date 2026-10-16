@@ -55,8 +55,9 @@ export default function LayoutUsuario({
       }
     : {
         userRole: usuario.role,
-        nomeUsuario: usuario.nome,
+        nomeUsuario: usuario.nome_exibicao || usuario.nome,
         cargoUsuario: usuario.perfil,
+        avatarUsuario: usuario.avatar,
         onLogoutHandler: handleLogoutAuth,
       };
 
@@ -66,6 +67,7 @@ export default function LayoutUsuario({
         userRole={dadosSidebar.userRole}
         nomeUsuario={dadosSidebar.nomeUsuario}
         cargoUsuario={dadosSidebar.cargoUsuario}
+        avatarUsuario={dadosSidebar.avatarUsuario}
         onLogout={dadosSidebar.onLogoutHandler}
         mobileAberto={menuMobileAberto}
         onFecharMobile={() => setMenuMobileAberto(false)}
@@ -74,11 +76,14 @@ export default function LayoutUsuario({
         <Cabecalho
           titulo={titulo}
           nome={dadosSidebar.nomeUsuario}
+          avatar={dadosSidebar.avatarUsuario}
           notificacoes={notificacoes}
           onMarcarNotificacaoLida={onMarcarNotificacaoLida}
           onMarcarTodasNotificacoesLidas={onMarcarTodasNotificacoesLidas}
           onLogout={dadosSidebar.onLogoutHandler}
           onAbrirMenuMobile={() => setMenuMobileAberto(true)}
+          onPerfil={() => navigate("/perfil")}
+          onConfiguracoes={() => navigate("/configuracoes")}
         />
         <div className="min-h-0 flex-1 overflow-y-auto overflow-x-hidden w-full">
           {children}

@@ -25,6 +25,8 @@ export const HOME_POR_PERFIL = {
 
 export const ROTAS_POR_PERFIL = {
   adm: [
+    "/perfil",
+    "/configuracoes",
     "/dashboard",
     "/equipamentos",
     "/equipamento",
@@ -40,6 +42,8 @@ export const ROTAS_POR_PERFIL = {
     "/relatorios/categorias"
   ],
   estagiario: [
+    "/perfil",
+    "/configuracoes",
     "/dashboard",
     "/equipamentos",
     "/equipamento",
@@ -47,12 +51,16 @@ export const ROTAS_POR_PERFIL = {
     "/EstagEmprestimos"
   ],
   professor: [
+    "/perfil",
+    "/configuracoes",
     "/dashboard",
     "/equipamentos",
     "/equipamento",
     "/manutencoes"
   ],
   aluno: [
+    "/perfil",
+    "/configuracoes",
     "/alunoEmprestimos",
     "/catalogo",
     "/equipamentos",
@@ -93,7 +101,6 @@ export function getSessao() {
 }
 
 export function salvarSessao(usuario) {
-  console.log("💾 Salvando sessão:", usuario);
   sessionStorage.setItem(SESSION_KEY, JSON.stringify(usuario));
 }
 
@@ -136,15 +143,16 @@ export async function autenticar(identificador, senha) {
   }
 
   const dados = await resposta.json();
-  console.log("✅ Login bem-sucedido:", dados);
-
   const sessao = {
     id: dados.id,
     nome: dados.nome,
+    nome_exibicao: dados.nome_exibicao,
     email: dados.email,
     perfil: dados.perfil,
     role: mapPerfilToRole(dados.perfil),
     tipo_usuario: dados.tipo_usuario,
+    avatar: dados.avatar,
+    tema: dados.tema || "institucional",
     access_token: dados.access_token,
   };
 

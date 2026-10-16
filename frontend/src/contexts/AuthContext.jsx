@@ -22,6 +22,15 @@ export function AuthProvider({ children }) {
     setUsuario(null);
   }
 
+  function atualizarUsuarioSessao(dados) {
+    setUsuario((usuarioAtual) => {
+      if (!usuarioAtual) return usuarioAtual;
+      const usuarioAtualizado = { ...usuarioAtual, ...dados };
+      sessionStorage.setItem("gipar_usuario", JSON.stringify(usuarioAtualizado));
+      return usuarioAtualizado;
+    });
+  }
+
   const valor = useMemo(
     () => ({
       usuario,
@@ -29,6 +38,7 @@ export function AuthProvider({ children }) {
       homePath: usuario ? HOME_POR_PERFIL[usuario.role] ?? "/login" : "/login",
       login,
       logout,
+      atualizarUsuarioSessao,
     }),
     [usuario]
   );

@@ -13,6 +13,8 @@ import MeusEmprestimos from './pages/aluno/MeusEmprestimos.jsx';
 import EmprestimosAdm from './pages/adm/Emprestimo.jsx';
 import EstagEmprestimos from "./pages/estagiario/emprestimos.jsx";
 import Catalogo from './pages/aluno/Catalogo.jsx';
+import Perfil from './pages/perfil/Perfil.jsx';
+import Configuracoes from './pages/configuracoes/Configuracoes.jsx';
 
 // Importações de autenticação
 import ProtectedRoute from './components/ProtectedRoute';
@@ -42,6 +44,23 @@ export default function App() {
         {/* Rotas Públicas */}
         <Route path="/" element={<RotaInicial />} />
         <Route path="/login" element={<Login />} />
+
+        <Route
+          path="/perfil"
+          element={
+            <ProtectedRoute>
+              <Perfil />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/configuracoes"
+          element={
+            <ProtectedRoute>
+              <Configuracoes />
+            </ProtectedRoute>
+          }
+        />
 
         {/* Rotas Protegidas (Exigem Autenticação) */}
         <Route 

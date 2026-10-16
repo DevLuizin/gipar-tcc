@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import { LogOut, Settings, User } from "lucide-react";
 import Avatar from "../ui/Avatar";
 
-export default function MenuUsuario({ nome, onLogout, onPerfil, onConfiguracoes }) {
+export default function MenuUsuario({ nome, avatar, onLogout, onPerfil, onConfiguracoes }) {
   const [aberto, setAberto] = useState(false);
   const containerRef = useRef(null);
 
@@ -35,7 +35,7 @@ export default function MenuUsuario({ nome, onLogout, onPerfil, onConfiguracoes 
         aria-label="Menu do usuário"
         aria-expanded={aberto}
       >
-        <Avatar nome={nome} tamanho={36} />
+        <Avatar nome={nome} avatar={avatar} tamanho={36} />
       </button>
 
       {aberto && (

@@ -39,7 +39,7 @@ export function getAuthHeaders(extraHeaders = {}) {
 
   if (token) {
     headers["Authorization"] = `Bearer ${token}`;
-    console.log("🔑 Headers com token:", headers);
+    console.log("🔑 Requisição autenticada preparada.");
   } else {
     console.warn("⚠️ Nenhum token disponível para autenticação!");
   }

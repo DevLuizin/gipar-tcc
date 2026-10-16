@@ -6,11 +6,14 @@ import MenuUsuario from "../MenuUsuario";
 export default function Cabecalho({
   titulo,
   nome,
+  avatar,
   notificacoes = [],
   onMarcarNotificacaoLida,
   onMarcarTodasNotificacoesLidas,
   onLogout,
   onAbrirMenuMobile,
+  onPerfil,
+  onConfiguracoes,
 }) {
   const usaInteracao = typeof onLogout === "function";
 
@@ -47,9 +50,10 @@ export default function Cabecalho({
 
             <MenuUsuario
               nome={nome}
+              avatar={avatar}
               onLogout={onLogout}
-              onPerfil={() => window.alert("Meu Perfil — em breve.")}
-              onConfiguracoes={() => window.alert("Configurações — em breve.")}
+              onPerfil={onPerfil}
+              onConfiguracoes={onConfiguracoes}
             />
           </>
         ) : (
