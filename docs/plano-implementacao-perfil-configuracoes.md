@@ -5,9 +5,12 @@
 > **Regras de negócio:** `RN-013` e `RN-014`  
 > **Decisão arquitetural:** [ADR-006 — Arquitetura de Temas e Gestão de Perfil](03-adrs/ADR-006-arquitetura-temas-e-gestao-perfil.md)  
 > **Data da revisão:** 15/10/2026  
-> **Status:** 🟢 Planejamento aprovado — nenhuma implementação realizada neste documento
+> **Status:** 🟠 Implementado — validação integrada
 
 ---
+
+> [!NOTE] Estado da execução
+> Backend, migration versionada, invalidação por `token_version`, telas de perfil/configurações, avatares predefinidos e os quatro temas foram implementados em 15/10/2026. O build do frontend, a compilação Python e os testes dos DTOs foram validados. Testes integrados com MySQL e inspeção visual final dependem do Docker Desktop em execução.
 
 ## 1. Objetivo
 

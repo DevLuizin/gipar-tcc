@@ -1,7 +1,7 @@
 ---
 id: REQ-003
 titulo: "Gestão Avançada de Usuários, Meu Perfil e Sistema de Temas"
-status: "🟢 Aprovado para Implementação"
+status: "🟠 Implementado — validação integrada pendente"
 tipo: "Melhoria / Usabilidade e Segurança"
 modulo: "Usuários / Perfil e Configurações"
 origem: "Backlog de melhorias e revisão técnica"
@@ -10,7 +10,7 @@ tags: [requisito, usuarios, autenticacao, perfil, configuracoes, temas, seguranc
 
 # REQ-003 — Gestão Avançada de Usuários, Meu Perfil e Sistema de Temas
 
-**Status:** 🟢 Aprovado para Implementação
+**Status:** 🟠 Implementado — validação integrada pendente
 **Tipo:** Melhoria / Usabilidade e Segurança
 **Módulo:** Usuários / Perfil e Configurações
 **Origem:** Backlog de melhorias e revisão técnica
@@ -103,7 +103,8 @@ Os itens do menu exibem alertas temporários. O avatar mostra somente a inicial 
 - **Regras de negócio:** `RN-006`, `RN-013`, `RN-014`.
 - **ADR:** [ADR-006 — Arquitetura de Temas e Gestão de Perfil](../../03-adrs/ADR-006-arquitetura-temas-e-gestao-perfil.md).
 - **Plano de Implementação:** [docs/plano-implementacao-perfil-configuracoes.md](../../plano-implementacao-perfil-configuracoes.md).
-- **Testes previstos:** contratos da API, autorização, atualização de sessão, política de senha, invalidação de JWT, catálogo de avatares, persistência multidispositivo do tema e validação visual.
+- **Implementação:** `backend/api/routers/usuarios.py`, `backend/gerenciador_db/usuario.py`, `backend/seguranca.py`, `frontend/src/pages/perfil/Perfil.jsx`, `frontend/src/pages/configuracoes/Configuracoes.jsx` e `frontend/src/contexts/ThemeContext.jsx`.
+- **Testes:** `backend/tests/test_perfil_models.py`, `backend/tests/test_seguranca.py` e `backend/tests/test_api_contract.py`. A validação integrada com MySQL e a validação visual permanecem pendentes.
 
 ## 11. Observações
 <!-- MANUAL:START -->
